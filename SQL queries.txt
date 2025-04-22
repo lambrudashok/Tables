@@ -1,0 +1,170 @@
+CREATE TABLE `adminmaster` (
+  `adminid` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  PRIMARY KEY (`adminid`),
+  UNIQUE KEY `username` (`username`)
+);
+
+CREATE TABLE `registrationmaster` (
+  `registerid` int NOT NULL AUTO_INCREMENT,
+  `customername` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `profileimg` varchar(50) DEFAULT 'person.png',
+  `status` varchar(50) DEFAULT 'no',
+  PRIMARY KEY (`registerid`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `username` (`username`)
+);
+
+
+CREATE TABLE `postmaster` (
+  `postid` int NOT NULL,
+  `post` varchar(1000) NOT NULL,
+  `postdate` date NOT NULL,
+  `imgname` varchar(50) DEFAULT 'person.png',
+  PRIMARY KEY (`postid`)
+);
+
+
+CREATE TABLE `commentmaster` (
+  `commentid` int NOT NULL AUTO_INCREMENT,
+  `comment` varchar(35) NOT NULL,
+  `commentdate` date DEFAULT NULL,
+  `registerid` int NOT NULL,
+  PRIMARY KEY (`commentid`)
+);
+
+
+CREATE TABLE `likemaster` (
+  `likeid` int NOT NULL AUTO_INCREMENT,
+  `registerid` int NOT NULL,
+  PRIMARY KEY (`likeid`)
+);
+
+CREATE TABLE `biomaster` (
+  `bioid` int NOT NULL AUTO_INCREMENT,
+  `bio` varchar(35) DEFAULT NULL,
+  PRIMARY KEY (`bioid`)
+);
+
+CREATE TABLE `followingmaster` (
+  `followingid` int NOT NULL AUTO_INCREMENT,
+  `followingregisterid` int DEFAULT NULL,
+  PRIMARY KEY (`followingid`),
+  KEY `followingregisterid` (`followingregisterid`),
+  CONSTRAINT `followingmaster_ibfk_1` FOREIGN KEY (`followingregisterid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `followermaster` (
+  `followerid` int NOT NULL AUTO_INCREMENT,
+  `followerregisterid` int DEFAULT NULL,
+  PRIMARY KEY (`followerid`),
+  KEY `followerregisterid` (`followerregisterid`),
+  CONSTRAINT `followermaster_ibfk_1` FOREIGN KEY (`followerregisterid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `notificationmaster` (
+  `nid` int NOT NULL AUTO_INCREMENT,
+  `notification` varchar(200) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `sendid` int DEFAULT NULL,
+  `time` time DEFAULT NULL,
+  `view` varchar(3) NOT NULL DEFAULT 'no',
+  PRIMARY KEY (`nid`)
+);
+
+CREATE TABLE `loginmaster` (
+  `loginid` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `date` date NOT NULL,
+  `time` time DEFAULT NULL,
+  `registerid` int DEFAULT NULL,
+  PRIMARY KEY (`loginid`)
+);
+
+
+CREATE TABLE `reportproblemmaster` (
+  `reportid` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) NOT NULL,
+  `description` varchar(200) NOT NULL,
+  `date` date DEFAULT NULL,
+  `status` varchar(10) DEFAULT NULL,
+  `registerid` int DEFAULT NULL,
+  PRIMARY KEY (`reportid`),
+  KEY `registerid` (`registerid`),
+  CONSTRAINT `reportproblemmaster_ibfk_1` FOREIGN KEY (`registerid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `deleterequest` (
+  `registerid` int DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  KEY `registerid` (`registerid`),
+  CONSTRAINT `deleterequest_ibfk_1` FOREIGN KEY (`registerid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `postregistrationjoin` (
+  `postid` int DEFAULT NULL,
+  `registerid` int DEFAULT NULL,
+  KEY `postid` (`postid`),
+  KEY `registerid` (`registerid`),
+  CONSTRAINT `postregistrationjoin_ibfk_1` FOREIGN KEY (`postid`) REFERENCES `postmaster` (`postid`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `postregistrationjoin_ibfk_2` FOREIGN KEY (`registerid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+
+CREATE TABLE `postcommentjoin` (
+  `postid` int DEFAULT NULL,
+  `commentid` int DEFAULT NULL,
+  KEY `postid` (`postid`),
+  KEY `commentid` (`commentid`),
+  CONSTRAINT `postcommentjoin_ibfk_1` FOREIGN KEY (`postid`) REFERENCES `postmaster` (`postid`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `postcommentjoin_ibfk_2` FOREIGN KEY (`commentid`) REFERENCES `commentmaster` (`commentid`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+
+CREATE TABLE `likepostjoin` (
+  `likeid` int DEFAULT NULL,
+  `postid` int DEFAULT NULL,
+  KEY `likeid` (`likeid`),
+  KEY `postid` (`postid`),
+  CONSTRAINT `likepostjoin_ibfk_1` FOREIGN KEY (`likeid`) REFERENCES `likemaster` (`likeid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `likepostjoin_ibfk_2` FOREIGN KEY (`postid`) REFERENCES `postmaster` (`postid`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `bioregistrationjoin` (
+  `bioid` int DEFAULT NULL,
+  `registerid` int DEFAULT NULL,
+  KEY `bioid` (`bioid`),
+  KEY `registerid` (`registerid`),
+  CONSTRAINT `bioregistrationjoin_ibfk_1` FOREIGN KEY (`bioid`) REFERENCES `biomaster` (`bioid`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `bioregistrationjoin_ibfk_2` FOREIGN KEY (`registerid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+
+CREATE TABLE `userfollowingfollowerjoin` (
+  `registerid` int DEFAULT NULL,
+  `followingid` int DEFAULT NULL,
+  `followerid` int DEFAULT NULL,
+  KEY `registerid` (`registerid`),
+  KEY `followingid` (`followingid`),
+  KEY `followerid` (`followerid`),
+  CONSTRAINT `userfollowingfollowerjoin_ibfk_1` FOREIGN KEY (`registerid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `userfollowingfollowerjoin_ibfk_2` FOREIGN KEY (`followingid`) REFERENCES `followingmaster` (`followingid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `userfollowingfollowerjoin_ibfk_3` FOREIGN KEY (`followerid`) REFERENCES `followermaster` (`followerid`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE `notificationregistrationjoin` (
+  `registerid` int DEFAULT NULL,
+  `nid` int DEFAULT NULL,
+  KEY `registerid` (`registerid`),
+  KEY `nid` (`nid`),
+  CONSTRAINT `notificationregistrationjoin_ibfk_1` FOREIGN KEY (`registerid`) REFERENCES `registrationmaster` (`registerid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `notificationregistrationjoin_ibfk_2` FOREIGN KEY (`nid`) REFERENCES `notificationmaster` (`nid`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
