@@ -1,3 +1,10 @@
+
+
+"Project Name : Identify Person Behavior By Social Media"
+
+
+
+
 CREATE TABLE `adminmaster` (
   `adminid` int NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
